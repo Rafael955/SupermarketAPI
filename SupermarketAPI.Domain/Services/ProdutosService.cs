@@ -1,0 +1,115 @@
+﻿using SupermarketAPI.Domain.DTOs.Products;
+using SupermarketAPI.Domain.Entities;
+using SupermarketAPI.Domain.Interfaces.Repositories;
+using SupermarketAPI.Domain.Interfaces.Services;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SupermarketAPI.Domain.Services
+{
+    public class ProdutosService : IProdutosService
+    {
+        private readonly IProdutosRepository _produtoRepository;
+
+        public ProdutosService(IProdutosRepository produtoRepository)
+        {
+            _produtoRepository = produtoRepository;
+        }
+
+        public ProdutoResponseDto CriarProduto(ProdutoRequestDto request)
+        {
+            #region Regra de Negócio - Não pode cadastrar produtos com o mesmo nome.
+
+            var product = _produtoRepository.GetByName(request.Nome);
+
+            if (product != null)
+                throw new ApplicationException("Já existe um produto cadastrado com este nome!");
+
+            #endregion
+
+            #region Regra de Negócio - O preço do produto não pode ser negativo.
+
+            if (request.Preco < 0)
+                throw new ApplicationException("Preço de um produto não poderá ter um valor negativo.");
+
+            #endregion
+
+            #region Regra de Negócio - Ao cadastrar ou editar um produto, é obrigatório informar uma categoria
+
+            if (request.CategoriaId == null)
+                throw new ApplicationException("Categoria do Produto é obrigatória.");
+
+            #endregion
+
+            #region Capturar os dados recebidos
+
+            product = MontarProduto(request);
+
+            #endregion
+            
+            #region Cadastrar o Produto
+
+            _produtoRepository.Add(product);
+
+            #endregion
+
+            #region Retornar dados do Produto cadastrado
+            
+            product = _produtoRepository.GetById(product.Id);
+
+            return new ProdutoResponseDto 
+            { 
+                Id = product.Id,
+                Nome = product.Nome,
+                CategoriaId  =product.CategoriaId,
+                Preco = product.Preco,
+                Quantidade = product.Quantidade,
+                DataCadastro = product.DataCadastro,
+                NomeCategoria = product.Categoria.Nome
+            };
+
+            #endregion
+        }
+
+        public ProdutoResponseDto AlterarProduto(ProdutoRequestDto produto)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ProdutoResponseDto ExcluirProduto(Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ProdutoResponseDto ObterProdutoPorId(Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<ProdutoResponseDto> ObterProdutos()
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<ProdutoResponseDto> ObterProdutosPorCategoria()
+        {
+            throw new NotImplementedException();
+        }
+
+        private Produto MontarProduto(ProdutoRequestDto request)
+        {
+            return new Produto()
+            {
+                Id = Guid.NewGuid(),
+                Nome = request.Nome,
+                Preco = request.Preco,
+                Quantidade = request.Quantidade,
+                CategoriaId = request.CategoriaId.Value,
+                DataCadastro = DateTime.Now
+            };
+        }
+    }
+}
