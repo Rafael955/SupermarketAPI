@@ -48,7 +48,25 @@ namespace SupermarketAPI.Application.Controllers
         [ProducesResponseType(typeof(ProdutoResponseDto), StatusCodes.Status200OK)]
         public IActionResult Put(Guid id, [FromBody] ProdutoRequestDto request)
         {
-            return Ok();
+            try
+            {
+                var response = _produtoServices.AlterarProduto(id, request);
+                return Ok(response);
+            }
+            catch (ApplicationException ex)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, new
+                {
+                    message = ex.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new
+                {
+                    message = ex.Message
+                });
+            }
         }
 
         [HttpDelete("excluir-produto/{id}")]

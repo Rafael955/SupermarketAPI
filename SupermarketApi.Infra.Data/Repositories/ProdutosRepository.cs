@@ -21,9 +21,13 @@ namespace SupermarketAPI.Infra.Data.Repositories
             }
         }
 
-        public void Update(Produto cliente)
+        public void Update(Produto produto)
         {
-            throw new NotImplementedException();
+            using (var dataContext = new DataContext())
+            {
+                dataContext.Update(produto);
+                dataContext.SaveChanges();
+            }
         }
 
         public void Delete(Guid id)

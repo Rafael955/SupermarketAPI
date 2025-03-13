@@ -9,9 +9,9 @@ namespace SupermarketAPI.Domain.Interfaces.Services
 {
     public interface IProdutosService
     {
-        ProdutoResponseDto CriarProduto(ProdutoRequestDto produto);
+        ProdutoResponseDto CriarProduto(ProdutoRequestDto request);
         
-        ProdutoResponseDto AlterarProduto(ProdutoRequestDto produto);
+        ProdutoResponseDto AlterarProduto(Guid id, ProdutoRequestDto request);
 
         ProdutoResponseDto ExcluirProduto(Guid id);
 

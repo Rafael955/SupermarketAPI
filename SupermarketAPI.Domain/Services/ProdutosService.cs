@@ -46,10 +46,18 @@ namespace SupermarketAPI.Domain.Services
 
             #region Capturar os dados recebidos
 
-            product = MontarProduto(request);
+            product = new Produto()
+            {
+                Id = Guid.NewGuid(),
+                Nome = request.Nome,
+                Preco = request.Preco,
+                Quantidade = request.Quantidade,
+                CategoriaId = request.CategoriaId.Value,
+                DataCadastro = DateTime.Now
+            };
 
             #endregion
-            
+
             #region Cadastrar o Produto
 
             _produtoRepository.Add(product);
@@ -74,9 +82,62 @@ namespace SupermarketAPI.Domain.Services
             #endregion
         }
 
-        public ProdutoResponseDto AlterarProduto(ProdutoRequestDto produto)
+        public ProdutoResponseDto AlterarProduto(Guid id, ProdutoRequestDto request)
         {
-            throw new NotImplementedException();
+            #region Regra de Negócio - Não pode cadastrar produtos com o mesmo nome.
+
+            var product = _produtoRepository.GetByName(request.Nome);
+
+            if (product != null && product.Id != id)
+                throw new ApplicationException("Já existe um produto cadastrado com este nome!");
+
+            #endregion
+
+            #region Regra de Negócio - O preço do produto não pode ser negativo.
+
+            if (request.Preco < 0)
+                throw new ApplicationException("Preço de um produto não poderá ter um valor negativo.");
+
+            #endregion
+
+            #region Regra de Negócio - Ao cadastrar ou editar um produto, é obrigatório informar uma categoria
+
+            if (request.CategoriaId == null)
+                throw new ApplicationException("Categoria do Produto é obrigatória.");
+
+            #endregion
+
+            #region Capturar os dados recebidos
+
+            product = _produtoRepository.GetById(id);
+
+            product.Nome = request.Nome;
+            product.Preco = request.Preco;
+            product.Quantidade = request.Quantidade;
+            product.CategoriaId = request.CategoriaId.Value;
+
+            #endregion
+
+            #region Alterar o Produto
+
+            _produtoRepository.Update(product);
+
+            #endregion
+
+            #region Retornar dados do Produto alterado
+
+            return new ProdutoResponseDto
+            {
+                Id = product.Id,
+                Nome = product.Nome,
+                CategoriaId = product.CategoriaId,
+                Preco = product.Preco,
+                Quantidade = product.Quantidade,
+                DataCadastro = product.DataCadastro,
+                NomeCategoria = product.Categoria.Nome
+            };
+
+            #endregion
         }
 
         public ProdutoResponseDto ExcluirProduto(Guid id)
@@ -97,19 +158,6 @@ namespace SupermarketAPI.Domain.Services
         public List<ProdutoResponseDto> ObterProdutosPorCategoria()
         {
             throw new NotImplementedException();
-        }
-
-        private Produto MontarProduto(ProdutoRequestDto request)
-        {
-            return new Produto()
-            {
-                Id = Guid.NewGuid(),
-                Nome = request.Nome,
-                Preco = request.Preco,
-                Quantidade = request.Quantidade,
-                CategoriaId = request.CategoriaId.Value,
-                DataCadastro = DateTime.Now
-            };
         }
     }
 }
