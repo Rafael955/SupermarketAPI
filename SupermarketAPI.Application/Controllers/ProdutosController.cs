@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Azure.Core;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SupermarketAPI.Domain.DTOs.Products;
 using SupermarketAPI.Domain.Interfaces.Services;
@@ -26,7 +27,12 @@ namespace SupermarketAPI.Application.Controllers
             {
                 var response = _produtoServices.CriarProduto(request);
 
-                return Created(string.Empty, response);
+                return StatusCode(StatusCodes.Status201Created, new
+                {
+                    message = $"O produto {response.Nome} foi cadastrado com sucesso!",
+                    createdAt = DateTime.Now, //data e hora da exclusão
+                    productData = response, //id do produto que foi excluido
+                });
             }
             catch(ApplicationException ex)
             {
@@ -51,7 +57,13 @@ namespace SupermarketAPI.Application.Controllers
             try
             {
                 var response = _produtoServices.AlterarProduto(id, request);
-                return Ok(response);
+
+                return StatusCode(StatusCodes.Status200OK, new
+                {
+                    message = $"Produto {response.Nome} foi excluido com sucesso!",
+                    modifiedAt = DateTime.Now, //data e hora da exclusão
+                    productData = response, //id do produto que foi excluido
+                });
             }
             catch (ApplicationException ex)
             {
@@ -73,21 +85,69 @@ namespace SupermarketAPI.Application.Controllers
         [ProducesResponseType(typeof(ProdutoResponseDto), StatusCodes.Status200OK)]
         public IActionResult Delete(Guid id)
         {
-            return Ok();
+            try
+            {
+                var response = _produtoServices.ExcluirProduto(id);
+
+                return StatusCode(StatusCodes.Status200OK, new 
+                { 
+                    message = $"O produto {response.Nome} foi excluido com sucesso!",
+                    deletedAt = DateTime.Now, //data e hora da exclusão
+                    productData = response, //id do produto que foi excluido
+                });
+            }
+            catch (ApplicationException ex)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, new
+                {
+                    message = ex.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new
+                {
+                    message = ex.Message
+                });
+            }
         }
 
         [HttpGet("listar-produtos")]
         [ProducesResponseType(typeof(ProdutoResponseDto), StatusCodes.Status200OK)]
         public IActionResult GetAll()
         {
-            return Ok();
+            try
+            {
+                var response = _produtoServices.ObterProdutos();
+
+                return StatusCode(StatusCodes.Status200OK, response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new
+                {
+                    message = ex.Message
+                });
+            }
         }
 
         [HttpGet("obter-produto/{id}")]
         [ProducesResponseType(typeof(ProdutoResponseDto), StatusCodes.Status200OK)]
         public IActionResult GetById(Guid id)
         {
-            return Ok();
+            try
+            {
+                var response = _produtoServices.ObterProdutoPorId(id);
+
+                return StatusCode(StatusCodes.Status200OK, response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new
+                {
+                    message = ex.Message
+                });
+            }
         }
     }
 }

@@ -124,7 +124,7 @@ namespace SupermarketAPI.Domain.Services
 
             #endregion
 
-            #region Retornar dados do Produto alterado
+            #region Retornar dados do produto alterado
 
             return new ProdutoResponseDto
             {
@@ -142,22 +142,93 @@ namespace SupermarketAPI.Domain.Services
 
         public ProdutoResponseDto ExcluirProduto(Guid id)
         {
-            throw new NotImplementedException();
+            #region Buscar o produto pelo ID no Banco de Dados
+
+            var product = _produtoRepository.GetById(id);
+
+            if (product == null)
+                throw new ApplicationException("Produto não foi encontrado, verifique o ID informado.");
+
+            #endregion
+
+            #region Excluir o Produto
+
+            _produtoRepository.Delete(product.Id);
+
+            #endregion
+
+            #region Retornar dados do produto excluido
+
+            return new ProdutoResponseDto
+            {
+                Id = product.Id,
+                Nome = product.Nome,
+                CategoriaId = product.CategoriaId,
+                Preco = product.Preco,
+                Quantidade = product.Quantidade,
+                DataCadastro = product.DataCadastro,
+                NomeCategoria = product.Categoria.Nome
+            };
+
+            #endregion
         }
 
         public ProdutoResponseDto ObterProdutoPorId(Guid id)
         {
-            throw new NotImplementedException();
+            #region Buscar o produto pelo ID no Banco de Dados
+
+            var product = _produtoRepository.GetById(id);
+
+            if (product == null)
+                throw new ApplicationException("Produto não foi encontrado, verifique o ID informado.");
+
+            #endregion
+
+            #region Retornar dados do produto pesquisado
+
+            return new ProdutoResponseDto
+            {
+                Id = product.Id,
+                Nome = product.Nome,
+                CategoriaId = product.CategoriaId,
+                Preco = product.Preco,
+                Quantidade = product.Quantidade,
+                DataCadastro = product.DataCadastro,
+                NomeCategoria = product.Categoria.Nome
+            };
+
+            #endregion
         }
 
         public List<ProdutoResponseDto> ObterProdutos()
         {
-            throw new NotImplementedException();
-        }
+            List<ProdutoResponseDto> listaProdutosDto = new List<ProdutoResponseDto>();
 
-        public List<ProdutoResponseDto> ObterProdutosPorCategoria()
-        {
-            throw new NotImplementedException();
+            #region Obter lista de Produtos
+
+            var listaProdutos = _produtoRepository.GetAll();
+
+            foreach (var produto in listaProdutos)
+            {
+                listaProdutosDto.Add(new ProdutoResponseDto
+                {
+                    Id = produto.Id,
+                    Nome = produto.Nome,
+                    CategoriaId = produto.CategoriaId,
+                    DataCadastro = produto.DataCadastro,
+                    Preco = produto.Preco,
+                    NomeCategoria = produto.Categoria.Nome,
+                    Quantidade = produto.Quantidade
+                });
+            }
+
+            #endregion
+            
+            #region Retornar lista com dados dos produtos cadastrados
+
+            return listaProdutosDto;
+            
+            #endregion
         }
     }
 }

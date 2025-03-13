@@ -32,12 +32,24 @@ namespace SupermarketAPI.Infra.Data.Repositories
 
         public void Delete(Guid id)
         {
-            throw new NotImplementedException();
+            using (var dataContext = new DataContext())
+            {
+                var product = GetById(id);
+
+                dataContext.Remove(product);
+                dataContext.SaveChanges();
+            }
         }
 
         public List<Produto> GetAll()
         {
-            throw new NotImplementedException();
+            using (var dataContext = new DataContext())
+            {
+                return dataContext
+                    .Set<Produto>()
+                    .Include(p => p.Categoria) //Similar a um JOIN no Banco de Dados
+                    .ToList();
+            }
         }
 
         public Produto GetById(Guid id)

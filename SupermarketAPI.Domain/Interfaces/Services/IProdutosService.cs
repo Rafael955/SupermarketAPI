@@ -18,7 +18,5 @@ namespace SupermarketAPI.Domain.Interfaces.Services
         ProdutoResponseDto ObterProdutoPorId(Guid id);
 
         List<ProdutoResponseDto> ObterProdutos();
-
-        List<ProdutoResponseDto> ObterProdutosPorCategoria();
     }
 }
