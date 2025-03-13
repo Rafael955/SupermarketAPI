@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace SupermarketAPI.Domain.DTOs.Categories
 {
-    public class CategoriaResquestDto
+    public class CategoriaRequestDto
     {
+        public string Nome { get; set; }
     }
 }

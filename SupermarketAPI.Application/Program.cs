@@ -16,8 +16,11 @@ builder.Services.Configure<RouteOptions>(options =>
     options.LowercaseUrls = true;
 });
 
-builder.Services.AddTransient<IProdutosRepository, ProdutosRepository>();
 builder.Services.AddTransient<IProdutosService, ProdutosService>();
+builder.Services.AddTransient<ICategoriasService, CategoriasService>();
+
+builder.Services.AddTransient<IProdutosRepository, ProdutosRepository>();
+builder.Services.AddTransient<ICategoriasRepository, CategoriasRepository>();
 
 var app = builder.Build();
 
