@@ -1,4 +1,5 @@
-﻿using SupermarketAPI.Domain.DTOs.Products;
+﻿using FluentValidation;
+using SupermarketAPI.Domain.DTOs.Products;
 using SupermarketAPI.Domain.Entities;
 using SupermarketAPI.Domain.Interfaces.Repositories;
 using SupermarketAPI.Domain.Interfaces.Services;
@@ -58,26 +59,28 @@ namespace SupermarketAPI.Domain.Services
 
             #endregion
 
+            #region Validar dados do Produto
+
+            var productValidator = new ProdutoValidator();
+            var results = productValidator.Validate(product);
+
+            if (!results.IsValid)
+                throw new ValidationException(results.Errors);
+
+            #endregion
+
+
             #region Cadastrar o Produto
 
             _produtoRepository.Add(product);
+            
+            product = _produtoRepository.GetById(product.Id);
 
             #endregion
 
             #region Retornar dados do Produto cadastrado
-            
-            product = _produtoRepository.GetById(product.Id);
 
-            return new ProdutoResponseDto 
-            { 
-                Id = product.Id,
-                Nome = product.Nome,
-                CategoriaId  =product.CategoriaId,
-                Preco = product.Preco,
-                Quantidade = product.Quantidade,
-                DataCadastro = product.DataCadastro,
-                NomeCategoria = product.Categoria.Nome
-            };
+            return RetornarResponseProduto(product);
 
             #endregion
         }
@@ -108,34 +111,37 @@ namespace SupermarketAPI.Domain.Services
             #endregion
 
             #region Capturar os dados recebidos
-
+            
             product = _produtoRepository.GetById(id);
 
             product.Nome = request.Nome;
             product.Preco = request.Preco;
             product.Quantidade = request.Quantidade;
-            product.CategoriaId = request.CategoriaId.Value;
+            product.CategoriaId = (Guid)request.CategoriaId;
+
+            #endregion
+
+            #region Validar dados do Produto
+
+            var productValidator = new ProdutoValidator();
+            var results = productValidator.Validate(product);
+
+            if (!results.IsValid)
+                throw new ValidationException(results.Errors);
 
             #endregion
 
             #region Alterar o Produto
 
             _produtoRepository.Update(product);
+            
+            product = _produtoRepository.GetById(id);
 
             #endregion
 
             #region Retornar dados do produto alterado
 
-            return new ProdutoResponseDto
-            {
-                Id = product.Id,
-                Nome = product.Nome,
-                CategoriaId = product.CategoriaId,
-                Preco = product.Preco,
-                Quantidade = product.Quantidade,
-                DataCadastro = product.DataCadastro,
-                NomeCategoria = product.Categoria.Nome
-            };
+            return RetornarResponseProduto(product);
 
             #endregion
         }
@@ -151,6 +157,13 @@ namespace SupermarketAPI.Domain.Services
 
             #endregion
 
+            #region Regra de Negócio - O produto não poderá ser excluído se houver quantidade em estoque
+
+            if(product.Quantidade > 0)
+                throw new ApplicationException("O produto não poderá ser excluído, pois ainda há quantidade em estoque.");
+
+            #endregion
+
             #region Excluir o Produto
 
             _produtoRepository.Delete(product.Id);
@@ -159,16 +172,7 @@ namespace SupermarketAPI.Domain.Services
 
             #region Retornar dados do produto excluido
 
-            return new ProdutoResponseDto
-            {
-                Id = product.Id,
-                Nome = product.Nome,
-                CategoriaId = product.CategoriaId,
-                Preco = product.Preco,
-                Quantidade = product.Quantidade,
-                DataCadastro = product.DataCadastro,
-                NomeCategoria = product.Categoria.Nome
-            };
+            return RetornarResponseProduto(product);
 
             #endregion
         }
@@ -186,16 +190,7 @@ namespace SupermarketAPI.Domain.Services
 
             #region Retornar dados do produto pesquisado
 
-            return new ProdutoResponseDto
-            {
-                Id = product.Id,
-                Nome = product.Nome,
-                CategoriaId = product.CategoriaId,
-                Preco = product.Preco,
-                Quantidade = product.Quantidade,
-                DataCadastro = product.DataCadastro,
-                NomeCategoria = product.Categoria.Nome
-            };
+            return RetornarResponseProduto(product);
 
             #endregion
         }
@@ -215,20 +210,33 @@ namespace SupermarketAPI.Domain.Services
                     Id = produto.Id,
                     Nome = produto.Nome,
                     CategoriaId = produto.CategoriaId,
+                    NomeCategoria = produto.Categoria.Nome,
                     DataCadastro = produto.DataCadastro,
                     Preco = produto.Preco,
-                    NomeCategoria = produto.Categoria.Nome,
                     Quantidade = produto.Quantidade
                 });
             }
 
             #endregion
-            
+
             #region Retornar lista com dados dos produtos cadastrados
 
             return listaProdutosDto;
-            
+
             #endregion
+        }
+
+        private ProdutoResponseDto RetornarResponseProduto(Produto product)
+        {
+            return new ProdutoResponseDto
+            {
+                Id = product.Id,
+                Nome = product.Nome,
+                CategoriaId = product.CategoriaId,
+                Preco = product.Preco,
+                Quantidade = product.Quantidade,
+                DataCadastro = product.DataCadastro
+            };
         }
     }
 }

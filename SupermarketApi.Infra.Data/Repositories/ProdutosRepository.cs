@@ -58,8 +58,9 @@ namespace SupermarketAPI.Infra.Data.Repositories
             {
                 return dataContext
                     .Set<Produto>()
-                    .Include(p => p.Categoria) //Similar a um JOIN no Banco de Dados
-                    .SingleOrDefault(p => p.Id == id);
+                    .Find(id);
+                    // .Include(p => p.Categoria) //Similar a um JOIN no Banco de Dados
+                    // .SingleOrDefault(p => p.Id == id);
             }
         }
 
