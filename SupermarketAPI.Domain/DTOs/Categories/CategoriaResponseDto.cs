@@ -11,7 +11,7 @@ namespace SupermarketAPI.Domain.DTOs.Categories
     {
         public Guid Id { get; set; }
 
-        public string Nome { get; set; }
+        public string? Nome { get; set; }
 
         public DateTime DataCadastro { get; set; }
     }

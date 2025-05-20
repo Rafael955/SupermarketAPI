@@ -166,7 +166,7 @@ namespace SupermarketAPI.Domain.Services
 
             #region Excluir o Produto
 
-            _produtoRepository.Delete(product.Id);
+            _produtoRepository.Delete(product);
 
             #endregion
 

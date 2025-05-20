@@ -13,12 +13,12 @@ namespace SupermarketAPI.Domain.Interfaces.Repositories
 
         void Update(Produto produto);
 
-        void Delete(Guid id);
+        void Delete(Produto produto);
 
-        List<Produto> GetAll();
+        List<Produto>? GetAll();
 
-        Produto GetById(Guid id);
+        Produto? GetById(Guid id);
 
-        Produto GetByName(string productName);
+        Produto? GetByName(string productName);
     }
 }

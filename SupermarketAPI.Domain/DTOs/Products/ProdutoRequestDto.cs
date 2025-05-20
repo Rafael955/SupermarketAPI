@@ -8,7 +8,7 @@ namespace SupermarketAPI.Domain.DTOs.Products
 {
     public class ProdutoRequestDto
     {
-        public string Nome { get; set; }
+        public string? Nome { get; set; }
 
         public decimal Preco { get; set; }
 

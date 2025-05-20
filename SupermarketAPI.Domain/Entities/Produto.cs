@@ -22,7 +22,7 @@ namespace SupermarketAPI.Domain.Entities
 
         public Guid CategoriaId { get; set; }
         
-        public virtual Categoria Categoria { get; set; }
+        public virtual Categoria? Categoria { get; set; }
         
         #endregion
     }

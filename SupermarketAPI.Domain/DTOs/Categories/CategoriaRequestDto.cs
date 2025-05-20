@@ -8,6 +8,6 @@ namespace SupermarketAPI.Domain.DTOs.Categories
 {
     public class CategoriaRequestDto
     {
-        public string Nome { get; set; }
+        public string? Nome { get; set; }
     }
 }

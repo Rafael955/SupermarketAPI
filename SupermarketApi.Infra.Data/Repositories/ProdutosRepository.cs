@@ -30,18 +30,16 @@ namespace SupermarketAPI.Infra.Data.Repositories
             }
         }
 
-        public void Delete(Guid id)
+        public void Delete(Produto produto)
         {
             using (var dataContext = new DataContext())
             {
-                var product = GetById(id);
-
-                dataContext.Remove(product);
+                dataContext.Remove(produto);
                 dataContext.SaveChanges();
             }
         }
 
-        public List<Produto> GetAll()
+        public List<Produto>? GetAll()
         {
             using (var dataContext = new DataContext())
             {
@@ -52,7 +50,7 @@ namespace SupermarketAPI.Infra.Data.Repositories
             }
         }
 
-        public Produto GetById(Guid id)
+        public Produto? GetById(Guid id)
         {
             using (var dataContext = new DataContext())
             {
@@ -64,7 +62,7 @@ namespace SupermarketAPI.Infra.Data.Repositories
             }
         }
 
-        public Produto GetByName(string productName)
+        public Produto? GetByName(string productName)
         {
             using (var dataContext = new DataContext())
             {

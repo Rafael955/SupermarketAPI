@@ -16,7 +16,7 @@ namespace SupermarketAPI.Domain.DTOs.Products
 
         public int? Quantidade { get; set; }
 
-        public decimal? Total => Preco * Quantidade;
+        public decimal? Total { get => Preco * Quantidade; }
 
         public Guid? CategoriaId { get; set; }
 
