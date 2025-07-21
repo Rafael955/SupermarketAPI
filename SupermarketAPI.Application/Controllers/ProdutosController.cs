@@ -31,8 +31,8 @@ namespace SupermarketAPI.Application.Controllers
                 return StatusCode(StatusCodes.Status201Created, new
                 {
                     message = $"O produto {response.Nome} foi cadastrado com sucesso!",
-                    createdAt = DateTime.Now, //data e hora da exclusão
-                    productData = response, //dados do produto que foi incluido
+                    createdAt = DateTime.Now, //data e hora da criação
+                    productData = response //dados do produto que foi incluido
                 });
             }
             catch(ValidationException ex)
@@ -72,8 +72,8 @@ namespace SupermarketAPI.Application.Controllers
                 return StatusCode(StatusCodes.Status200OK, new
                 {
                     message = $"Produto {response.Nome} foi atualizado com sucesso!",
-                    modifiedAt = DateTime.Now, //data e hora da exclusão
-                    productData = response, //dados do produto que foi alterado
+                    modifiedAt = DateTime.Now, //data e hora da alteração
+                    productData = response //dados do produto que foi alterado
                 });
             }
             catch(ValidationException ex)
@@ -114,7 +114,7 @@ namespace SupermarketAPI.Application.Controllers
                 { 
                     message = $"O produto {response.Nome} foi excluido com sucesso!",
                     deletedAt = DateTime.Now, //data e hora da exclusão
-                    productData = response, //dados do produto que foi excluido
+                    productData = response //dados do produto que foi excluido
                 });
             }
             catch (ApplicationException ex)
